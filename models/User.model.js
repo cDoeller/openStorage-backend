@@ -81,3 +81,26 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.model ("User", userSchema);
 
 module.exports = User;
+
+
+// {
+//   "email": "example@example.com",
+//   "password": "password123",
+//   "user_name": "example_user",
+//   "real_name": "Jane Doe",
+//   "profile_img_url": "https://example.com/profile.jpg",
+//   "contact": {
+//     "website": "https://example.com",
+//     "instagram": "@example_user",
+//     "address": {
+//       "street": "123 Main St",
+//       "city": "ExampleCity",
+//       "country": "ExampleCountry",
+//       "postal_code": 12345,
+//       "phone_number": 1234567890
+//     }
+//   },
+//   "isArtist": true,
+//   "artist_statement": "I love creating art!",
+//   "artworks": []
+// }
