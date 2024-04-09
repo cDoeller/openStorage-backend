@@ -37,7 +37,7 @@ const artworkSchema = new mongoose.Schema({
     },
     artist:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"Artist"
+        ref:"User"
     },
     medium:{
         type:String,
@@ -51,6 +51,7 @@ const artworkSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
     },
+    returnDate:Date,
     isForSale:{
         type:Boolean,
         default:false
