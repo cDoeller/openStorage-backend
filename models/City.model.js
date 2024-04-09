@@ -1,14 +1,18 @@
 const mongoose = require("mongoose")
 
 const citySchema = new mongoose.Schema({
-    user:{
-        type:[mongoose.Schema.Types.ObjectId],
-        ref:"User"
+    name:{
+        type:String,
+        required:true
     },
-    artworks:{
-        type:[mongoose.Schema.Types.ObjectId],
+    userList:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    }],
+    artworksList:[{
+        type:mongoose.Schema.Types.ObjectId,
         ref:"Artwork"
-    }
+    }]
 
 })
 
