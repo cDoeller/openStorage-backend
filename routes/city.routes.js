@@ -6,6 +6,7 @@ const router = require("express").Router()
 router.get("/:id", (req,res)=>{
     
     City.findById(req.params.id)
+    .populate("artist")
     .then((oneCity)=>{
         console.log(oneCity)
         res.json(oneCity)

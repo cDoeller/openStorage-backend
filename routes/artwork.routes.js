@@ -1,4 +1,5 @@
 const Artwork = require("../models/Artwork.model")
+const User = require("../models/User.model")
 
 const router = require("express").Router()
 
@@ -16,22 +17,6 @@ router.get("/", (req,res)=>{
     })
 })
 
-// Search route
-
-// router.get("/search", (req,res)=>{
-//     console.log(req.query)
-//     res.json(req.query)
-//     Artwork.find({q:req.query})
-//     .then((foundArtwork)=>{
-//         console.log(foundArtwork)
-//         res.json(foundArtwork)
-//     })
-//     .catch((err)=>{
-//         console.log(err)
-//         res.json(err)
-//     })
-
-// })
 
 // GET one artwork by id
 router.get("/:id", (req,res)=>{
@@ -46,17 +31,37 @@ router.get("/:id", (req,res)=>{
     })
 })
 
-// POST a new artwork
-router.post("/", (req,res)=>{
-    Artwork.create(req.body)
-    .then((newArtwork)=>{
-        console.log(newArtwork)
+// // POST a new artwork
+// router.post("/", (req,res)=>{
+//     Artwork.create(req.body)
+//     .then((newArtwork)=>{
+//         console.log(newArtwork)
+//         res.json(newArtwork)
+//     })
+//     .catch((err)=>{
+//         console.log(err)
+//         res.json(err)
+//     })
+// })
+
+// POST a new artwork async
+
+router.post("/", async (req,res)=>{
+    try{
+        const newArtwork = await Artwork.create(req.body)
+        const artist = await User.findById(newArtwork._id)
+        .then((artist)=>{
+            artist.artworks.push(newArtwork._id)
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
         res.json(newArtwork)
-    })
-    .catch((err)=>{
+
+    } catch(err){
         console.log(err)
         res.json(err)
-    })
+    }
 })
 
 
@@ -76,3 +81,21 @@ router.delete("/:id", (req,res)=>{
 
 
 module.exports = router
+
+
+// {
+//     "title": "Dreamscape",
+// "year": 2023,
+// "city": "New York",
+// "dimensions": {
+// "x": 120,
+// "y": 90,
+// "z": 0
+// },
+// "images_url": [
+// "https://example.com/dreamscape_image1.jpg",
+// "https://example.com/dreamscape_image2.jpg"
+// ],
+// "medium": "Painting",
+// "genre": "Surrealism"
+// }
