@@ -51,6 +51,7 @@ const artworkSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
     },
+    returnDate:Date,
     isForSale:{
         type:Boolean,
         default:false
