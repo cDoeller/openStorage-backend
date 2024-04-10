@@ -49,14 +49,11 @@ router.get("/:id", (req,res)=>{
 router.post("/", async (req,res)=>{
     try{
         const newArtwork = await Artwork.create(req.body)
-        const artist = await User.findById(newArtwork._id)
-        .then((artist)=>{
-            artist.artworks.push(newArtwork._id)
-        })
-        .catch((err)=>{
-            console.log(err)
-        })
-        res.json(newArtwork)
+        const updatedArtist = await User.findByIdAndUpdate(req.body.artist,{$push:{artworks:newArtwork._id}},{new:true})
+        
+        console.log(newArtwork)
+        console.log(updatedArtist)
+        res.json({newArtwork:newArtwork, updatedArtist:updatedArtist})
 
     } catch(err){
         console.log(err)
