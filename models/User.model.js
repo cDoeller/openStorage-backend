@@ -68,20 +68,21 @@ const userSchema = new mongoose.Schema(
     artist_statement: {
       type: String,
     },
-    artworks: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "Artwork",
-    },
+    artworks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Artwork",
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-const User = mongoose.model ("User", userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;
-
 
 // {
 //   "email": "example@example.com",
