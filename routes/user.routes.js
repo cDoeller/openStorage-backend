@@ -57,13 +57,45 @@ router.delete("/:_id/delete", isAuthenticated, (req, res) => {
     });
 });
 
-// UPDATE password-reset
-router.put ("/:_id/pwd", isAuthenticated, (req,res)=>{
-  // check pwd regex / empty
-  // make salt
-  // hash pw
-  // update user pw in db
-  // send back name, email, id
-})
+// UPDATE password-reset --> change PWD
+router
+  .put("/:_id/pwd", isAuthenticated, (req, res) => {
+    
+    // check pwd regex / empty
+    const { password, new_password } = req.body;
+    // Check if email or password or name are provided as empty strings
+    if (password === "" || new_password === "") {
+      res.status(400).json({ message: "Provide old and new password" });
+      return;
+    }
+    const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
+    if (!passwordRegex.test(new_password)) {
+      res.status(400).json({
+        message:
+          "New password must have at least 6 characters and contain at least one number, one lowercase and one uppercase letter.",
+      });
+      return;
+    }
+    
+    // make salt + hash pw
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const newHashedPassword = bcrypt.hashSync(new_password, salt);
+    
+    // 1) find user in DB
+    // 2) update user pw in db
+    // 3) send back success message
+    User.findById(req.params._id)
+      .then((userData) => {
+        userData.password = newHashedPassword;
+        return userData;
+      })
+      .then((userData) => {
+        User.findByIdAndUpdate(req.params._id, userData)
+          .then(() => {
+            res.json({ message: "Your password has been updated." });
+          })
+          .catch((err) => console.log(err));
+      });
+  })
 
 module.exports = router;
