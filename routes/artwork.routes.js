@@ -1,84 +1,92 @@
-const Artwork = require("../models/Artwork.model")
-const User = require("../models/User.model")
+const Artwork = require("../models/Artwork.model");
+const User = require("../models/User.model");
 
-const router = require("express").Router()
+const router = require("express").Router();
 
 // GET all artworks
-router.get("/", (req,res)=>{
-    Artwork.find()
+router.get("/", (req, res) => {
+  Artwork.find()
     .populate("artist")
-    .then((Artworks)=>{
-        console.log(Artworks)
-        res.json(Artworks)
+    .then((Artworks) => {
+      console.log(Artworks);
+      res.json(Artworks);
     })
-    .catch((err)=>{
-        console.log(err)
-        res.json(err)
-    })
-})
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
+});
 
+// SEARCH artworks
+router.get("/search", (req, res) => {
+  const { artist, medium, city, genre, dimensions } = req.query;
+  const searchQuery = {};
+
+  if (medium) searchQuery.medium = medium;
+  if (genre) searchQuery.genre = genre;
+  if (city) searchQuery.city = { $regex: `${city}`, $options: "i" };
+  // MISSING dimensions
+  // MISSING if (artist) searchQuery.artist = { $regex: `${city}`, $options: "i" };
+
+  console.log(searchQuery);
+  Artwork.find(searchQuery)
+    .populate("artist")
+    .then((foundArtworks) => {
+      res.json(foundArtworks);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
+});
 
 // GET one artwork by id
-router.get("/:id", (req,res)=>{
-    Artwork.findById(req.params.id)
+router.get("/:id", (req, res) => {
+  Artwork.findById(req.params.id)
     .populate("artist")
-    .then((oneArtwork)=>{
-        console.log(oneArtwork)
-        res.json(oneArtwork)
+    .then((oneArtwork) => {
+      console.log(oneArtwork);
+      res.json(oneArtwork);
     })
-    .catch((err)=>{
-        console.log(err)
-    })
-})
-
-// // POST a new artwork
-// router.post("/", (req,res)=>{
-//     Artwork.create(req.body)
-//     .then((newArtwork)=>{
-//         console.log(newArtwork)
-//         res.json(newArtwork)
-//     })
-//     .catch((err)=>{
-//         console.log(err)
-//         res.json(err)
-//     })
-// })
+    .catch((err) => {
+      console.log(err);
+    });
+});
 
 // POST a new artwork async
 
-router.post("/", async (req,res)=>{
-    try{
-        const newArtwork = await Artwork.create(req.body)
-        const updatedArtist = await User.findByIdAndUpdate(req.body.artist,{$push:{artworks:newArtwork._id}},{new:true})
-        
-        console.log(newArtwork)
-        console.log(updatedArtist)
-        res.json({newArtwork:newArtwork, updatedArtist:updatedArtist})
+router.post("/", async (req, res) => {
+  try {
+    const newArtwork = await Artwork.create(req.body);
+    const updatedArtist = await User.findByIdAndUpdate(
+      req.body.artist,
+      { $push: { artworks: newArtwork._id } },
+      { new: true }
+    );
 
-    } catch(err){
-        console.log(err)
-        res.json(err)
-    }
-})
-
+    console.log(newArtwork);
+    console.log(updatedArtist);
+    res.json({ newArtwork: newArtwork, updatedArtist: updatedArtist });
+  } catch (err) {
+    console.log(err);
+    res.json(err);
+  }
+});
 
 // DELETE one artwork
-router.delete("/:id", (req,res)=>{
-    Artwork.findByIdAndDelete(req.params.id)
-    .then((deletedArtwork)=>{
-        console.log(deletedArtwork)
-        res.json(deletedArtwork)
+router.delete("/:id", (req, res) => {
+  Artwork.findByIdAndDelete(req.params.id)
+    .then((deletedArtwork) => {
+      console.log(deletedArtwork);
+      res.json(deletedArtwork);
     })
-    .catch((err)=>{
-        console.log(err)
-        res.json(err)
-    })
-})
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
+});
 
-
-
-module.exports = router
-
+module.exports = router;
 
 // {
 //     "title": "Dreamscape",
