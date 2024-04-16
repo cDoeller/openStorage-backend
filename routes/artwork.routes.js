@@ -40,8 +40,8 @@ router.get("/search", (req, res) => {
   if (medium) searchQuery.medium = medium;
   if (genre) searchQuery.genre = genre;
   if (city) searchQuery.city = { $regex: `${city}`, $options: "i" };
+  if (artist) searchQuery.artist = artist;
   // MISSING dimensions
-  // MISSING if (artist) searchQuery.artist = { $regex: `${city}`, $options: "i" };
 
   console.log(searchQuery);
   Artwork.find(searchQuery)
