@@ -88,6 +88,20 @@ router.post("/", async (req, res) => {
   }
 });
 
+// UPDATE one artwork
+router.patch("/:id", (req,res)=>{
+  Artwork.findByIdAndUpdate(req.params.id, req.body, {new:true})
+  .then((updatedArtwork)=>{
+    console.log(updatedArtwork)
+    res.json(updatedArtwork)
+  })
+  .catch((err)=>{
+    console.log(err)
+    res.json(err)
+  })
+})
+
+
 // DELETE one artwork
 router.delete("/:id", (req, res) => {
   Artwork.findByIdAndDelete(req.params.id)
