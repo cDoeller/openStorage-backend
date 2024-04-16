@@ -41,7 +41,7 @@ router.get("/search", (req, res) => {
   if (genre) searchQuery.genre = genre;
   if (city) searchQuery.city = { $regex: `${city}`, $options: "i" };
   if (artist) searchQuery.artist = artist;
-  // MISSING dimensions
+  // *** MISSING dimensions
 
   console.log(searchQuery);
   Artwork.find(searchQuery)
