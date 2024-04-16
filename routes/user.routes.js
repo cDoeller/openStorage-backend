@@ -19,6 +19,20 @@ router.get("/artists", (req, res) => {
     });
 });
 
+// // GET artist by name
+// router.get("/artists/search", (req,res)=>{
+//   User.find({$and:[{isArtist: true}, {user_name:{$regex: `${req.query.name}`, $options: "i" }}]})
+//   .select("user_name _id artworks")
+//   .populate("artworks")
+//   .then((allArtists) => {
+//     res.json(allArtists);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//     res.json(err);
+//   });
+// })
+
 // GET one user + all data
 // test 66114ddfc49cfc974744bc0e
 router.get("/:_id", isAuthenticated, (req, res) => {
