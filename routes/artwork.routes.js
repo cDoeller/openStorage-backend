@@ -43,14 +43,16 @@ router.get("/search", (req, res) => {
     dimensions_y,
     dimensions_z,
   } = req.query;
-  
-  const searchQuery = {};
+
+  let searchQuery = {};
 
   if (medium) searchQuery.medium = medium;
   if (genre) searchQuery.genre = genre;
   if (city) searchQuery.city = { $regex: `${city}`, $options: "i" };
   if (artist) searchQuery.artist = artist;
-  // *** MISSING dimensions lte for each axis
+  if (dimensions_x) searchQuery["dimensions.x"] = { $lte: `${dimensions_x}`};
+  if (dimensions_y) searchQuery["dimensions.y"] = { $lte: `${dimensions_y}`};
+  if (dimensions_z) searchQuery["dimensions.z"] = { $lte: `${dimensions_z}`};
 
   console.log(searchQuery);
   Artwork.find(searchQuery)
