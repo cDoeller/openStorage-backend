@@ -19,6 +19,7 @@ router.get("/:id", (req,res)=>{
 })
 
 router.get("/", (req,res)=>{
+    
     City.find()
     .populate("userList")
     .populate("artworksList")

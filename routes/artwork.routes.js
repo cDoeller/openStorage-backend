@@ -34,14 +34,23 @@ router.get("/", (req, res) => {
 
 // SEARCH artworks
 router.get("/search", (req, res) => {
-  const { artist, medium, city, genre, dimensions } = req.query;
+  const {
+    artist,
+    medium,
+    city,
+    genre,
+    dimensions_x,
+    dimensions_y,
+    dimensions_z,
+  } = req.query;
+  
   const searchQuery = {};
 
   if (medium) searchQuery.medium = medium;
   if (genre) searchQuery.genre = genre;
   if (city) searchQuery.city = { $regex: `${city}`, $options: "i" };
   if (artist) searchQuery.artist = artist;
-  // *** MISSING dimensions
+  // *** MISSING dimensions lte for each axis
 
   console.log(searchQuery);
   Artwork.find(searchQuery)
@@ -89,18 +98,17 @@ router.post("/", async (req, res) => {
 });
 
 // UPDATE one artwork
-router.patch("/:id", (req,res)=>{
-  Artwork.findByIdAndUpdate(req.params.id, req.body, {new:true})
-  .then((updatedArtwork)=>{
-    console.log(updatedArtwork)
-    res.json(updatedArtwork)
-  })
-  .catch((err)=>{
-    console.log(err)
-    res.json(err)
-  })
-})
-
+router.patch("/:id", (req, res) => {
+  Artwork.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    .then((updatedArtwork) => {
+      console.log(updatedArtwork);
+      res.json(updatedArtwork);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
+});
 
 // DELETE one artwork
 router.delete("/:id", (req, res) => {
