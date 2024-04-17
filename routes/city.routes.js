@@ -6,7 +6,8 @@ const router = require("express").Router()
 router.get("/:id", (req,res)=>{
     
     City.findById(req.params.id)
-    .populate("artist")
+    .populate("userList")
+    .populate("artworksList")
     .then((oneCity)=>{
         console.log(oneCity)
         res.json(oneCity)
@@ -19,7 +20,8 @@ router.get("/:id", (req,res)=>{
 
 router.get("/", (req,res)=>{
     City.find()
-    .populate("artist")
+    .populate("userList")
+    .populate("artworksList")
     .then((allCities)=>{
         // console.log(allCities)
         res.json(allCities)
