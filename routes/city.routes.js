@@ -17,6 +17,19 @@ router.get("/:id", (req,res)=>{
     })
 })
 
+router.get("/", (req,res)=>{
+    City.find()
+    .populate("artist")
+    .then((allCities)=>{
+        // console.log(allCities)
+        res.json(allCities)
+    })
+    .catch((err)=>{
+        console.log(err)
+        res.json(err)
+    })
+})
+
 router.post("/", (req,res)=>{
 
     City.create(req.body)
