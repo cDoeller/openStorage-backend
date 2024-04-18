@@ -21,12 +21,9 @@ router.patch("/:id", async (req, res) => {
   try {
     const updatedRental = await Rental.findByIdAndUpdate(
       req.params.id,
-      req.body
+      req.body,
+      {new:true}
     );
-    const artwork = await Artwork.findByIdAndUpdate(req.body.artwork, {
-      borrowed_by: req.body.user_borrowing,
-      return_date: req.body.end_date,
-    });
     console.log(updatedRental);
     res.json(updatedRental);
   } catch (err) {
@@ -49,8 +46,8 @@ router.get("/:id", (req, res) => {
 });
 
 // GET all pending rentals (requests) by one user
-router.get("/", (req, res) => {
-  Rental.find({ user_borrowing: { $regex: req.body }, is_approved: false })
+router.get("/:user_id/pending", (req, res) => {
+  Rental.find({$and: [{user_borrowing:req.params.user_id}, {is_approved: false}] })
     .then((pendingRequests) => {
       console.log(pendingRequests);
       res.json(pendingRequests);
@@ -62,8 +59,8 @@ router.get("/", (req, res) => {
 });
 
 // GET all approved rentals for one user
-router.get("/", (req, res) => {
-  Rental.find({ user_borrowing: { $regex: req.body }, is_approved: true })
+router.get("/:user_id/approved", (req, res) => {
+  Rental.find({$and: [{user_borrowing:req.params.user_id}, {is_approved: true}] })
     .then((approvedRentals) => {
       console.log(approvedRentals);
       res.json(approvedRentals);

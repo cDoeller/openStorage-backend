@@ -54,11 +54,10 @@ const artworkSchema = new mongoose.Schema({
       "Conceptual Art",
     ],
   },
-  borrowed_by: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+  is_borrowed: {
+    type:Boolean,
+    default:false,
   },
-  return_date: Date,
   is_for_sale: {
     type: Boolean,
     default: false,
