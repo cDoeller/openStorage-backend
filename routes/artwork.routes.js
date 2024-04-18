@@ -32,6 +32,19 @@ router.get("/", (req, res) => {
     });
 });
 
+// GET all cities (unique)
+router.get("/cities", (req,res)=>{
+  Artwork.distinct("city")
+  .then((Artworks) => {
+    // console.log(Artworks);
+    res.json(Artworks);
+  })
+  .catch((err) => {
+    console.log(err);
+    res.json(err);
+  });
+})
+
 // SEARCH artworks
 router.get("/search", (req, res) => {
   const {
