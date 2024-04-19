@@ -26,7 +26,7 @@ const rentalSchema = new mongoose.Schema({
     required: true,
   },
   transportation_details: {
-    type: String,
+    type: Object,
   },
   message: {
     type: String,
