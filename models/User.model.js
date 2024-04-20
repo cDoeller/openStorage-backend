@@ -62,7 +62,7 @@ const userSchema = new mongoose.Schema(
       },
     },
     tagline: {
-      type:String
+      type: String,
     },
     isArtist: {
       type: Boolean,
@@ -72,6 +72,26 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     artworks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Artwork",
+      },
+    ],
+    rentals: {
+      rentals_offering: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Rental",
+        },
+      ],
+      rentals_receiving: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Rental",
+        },
+      ],
+    },
+    favorites: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Artwork",

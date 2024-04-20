@@ -9,7 +9,7 @@ const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 router.get("/artists", (req, res) => {
   User.find({ isArtist: true })
     .select("user_name _id artworks")
-    .populate("artworks")
+    .populate("artworks rentals favorites")
     .then((allArtists) => {
       res.json(allArtists);
     })
@@ -38,7 +38,7 @@ router.get("/artists", (req, res) => {
 router.get("/:_id", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
     .select("-password")
-    .populate("artworks")
+    .populate("artworks rentals favorites")
     .then((oneUserData) => {
       res.json(oneUserData);
     })
@@ -49,7 +49,7 @@ router.get("/:_id", isAuthenticated, (req, res) => {
 router.patch("/:_id/update", isAuthenticated, (req, res) => {
   User.findByIdAndUpdate(req.params._id, req.body, { new: true })
     .select("-password")
-    .populate("artworks")
+    .populate("artworks rentals favorites")
     .then((updatedUser) => {
       res.json(updatedUser);
     })

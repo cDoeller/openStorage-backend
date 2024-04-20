@@ -1,19 +1,27 @@
 const Artwork = require("../models/Artwork.model");
 const Rental = require("../models/Rental.model");
+const User = require("../models/User.model");
 
 const router = require("express").Router();
 
 // CREATE a new rental
-router.post("/", (req, res) => {
-  Rental.create(req.body)
-    .then((createdRental) => {
-      console.log(createdRental);
-      res.json(createdRental);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.json(err);
-    });
+router.post("/", async (req, res) => {
+  try {
+    const newRental = await Rental.create(req.body);
+    const updatedArtist = await User.findByIdAndUpdate(
+      req.body.artist,
+      { $push: { "rentals.rentals_offering": newRental._id } },
+      { new: true }
+    );
+    const updatedUser = await User.findByIdAndUpdate(
+      req.body.user_borrowing,
+      { $push: { "rentals.rentals_receiving": newRental._id } },
+      { new: true }
+    );
+  } catch (err) {
+    console.log(err);
+    res.json(err);
+  }
 });
 
 // UPDATE a rental, updates the artwork
@@ -23,7 +31,7 @@ router.patch("/:id", async (req, res) => {
       req.params.id,
       req.body,
       { new: true }
-    )
+    );
     console.log(updatedRental);
     res.json(updatedRental);
   } catch (err) {
