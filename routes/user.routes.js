@@ -46,7 +46,7 @@ router.get("/:_id", isAuthenticated, (req, res) => {
 });
 
 // UPDATE one user
-router.put("/:_id/update", isAuthenticated, (req, res) => {
+router.patch("/:_id/update", isAuthenticated, (req, res) => {
   User.findByIdAndUpdate(req.params._id, req.body, { new: true })
     .select("-password")
     .populate("artworks")
