@@ -19,19 +19,19 @@ router.get("/artists", (req, res) => {
     });
 });
 
-// // GET artist by name
-// router.get("/artists/search", (req,res)=>{
-//   User.find({$and:[{isArtist: true}, {user_name:{$regex: `${req.query.name}`, $options: "i" }}]})
-//   .select("user_name _id artworks")
-//   .populate("artworks")
-//   .then((allArtists) => {
-//     res.json(allArtists);
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//     res.json(err);
-//   });
-// })
+// GET all artists with artworks
+router.get("/artists/works", (req, res) => {
+  User.find({ $and: [{ isArtist: true }, { artworks: { $ne: [] } }] })
+    .select("user_name _id artworks")
+    .populate("artworks rentals favorites")
+    .then((allArtists) => {
+      res.json(allArtists);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json(err);
+    });
+});
 
 // GET  all data of one user
 router.get("/:_id", isAuthenticated, (req, res) => {
@@ -56,7 +56,7 @@ router.get("/:_id/favorites", isAuthenticated, (req, res) => {
 
 // UPDATE user Favorites
 router.patch(`/:_id/favorites`, isAuthenticated, (req, res) => {
-  User.findByIdAndUpdate(req.params._id,{favorites: req.body}, { new: true })
+  User.findByIdAndUpdate(req.params._id, { favorites: req.body }, { new: true })
     .select("favorites -_id")
     .then((oneUserFavorites) => {
       res.json(oneUserFavorites);
