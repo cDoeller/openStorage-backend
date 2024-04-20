@@ -62,7 +62,7 @@ const userSchema = new mongoose.Schema(
       },
     },
     tagline: {
-      type:String
+      type: String,
     },
     isArtist: {
       type: Boolean,
@@ -72,6 +72,26 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     artworks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Artwork",
+      },
+    ],
+    rentals: {
+      rentals_offering: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Rental",
+        },
+      ],
+      rentals_receiving: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Rental",
+        },
+      ],
+    },
+    favorites: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Artwork",
@@ -87,24 +107,3 @@ const User = mongoose.model("User", userSchema);
 
 module.exports = User;
 
-// {
-//   "email": "example@example.com",
-//   "password": "password123",
-//   "user_name": "example_user",
-//   "real_name": "Jane Doe",
-//   "profile_img_url": "https://example.com/profile.jpg",
-//   "contact": {
-//     "website": "https://example.com",
-//     "instagram": "@example_user",
-//     "address": {
-//       "street": "123 Main St",
-//       "city": "ExampleCity",
-//       "country": "ExampleCountry",
-//       "postal_code": 12345,
-//       "phone_number": 1234567890
-//     }
-//   },
-//   "isArtist": true,
-//   "artist_statement": "I love creating art!",
-//   "artworks": []
-// }
