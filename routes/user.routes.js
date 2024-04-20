@@ -33,14 +33,23 @@ router.get("/artists", (req, res) => {
 //   });
 // })
 
-// GET one user + all data
-// test 66114ddfc49cfc974744bc0e
+// GET  all data of one user
 router.get("/:_id", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
     .select("-password")
     .populate("artworks rentals favorites")
     .then((oneUserData) => {
       res.json(oneUserData);
+    })
+    .catch((err) => console.log(err));
+});
+
+// GET all favorites of one user
+router.get("/:_id/favorites", isAuthenticated, (req, res) => {
+  User.findById(req.params._id)
+    .select("favorites -_id")
+    .then((oneUserFavorites) => {
+      res.json(oneUserFavorites);
     })
     .catch((err) => console.log(err));
 });
