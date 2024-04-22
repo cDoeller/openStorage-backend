@@ -20,7 +20,7 @@ router.post("/", async (req, res) => {
     );
   } catch (err) {
     console.log(err);
-    res.json(err);
+    res.status(400).json(err);
   }
 });
 
