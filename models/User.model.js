@@ -1,12 +1,11 @@
-const { Schema, model } = require("mongoose");
+const mongoose = require("mongoose");
 
-// TODO: Please make sure you edit the User model to whatever makes sense in this case
-const userSchema = new Schema(
+const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
       required: [true, "Email is required."],
-      unique: true,
+      unique: true, // error handeling via err-code needed?
       lowercase: true,
       trim: true,
     },
@@ -14,17 +13,90 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Password is required."],
     },
-    name: {
+    user_name: {
       type: String,
-      required: [true, "Name is required."],
+      unique: true, // error handeling via err-code needed?
+      required: [true, "User name is required."],
     },
+    real_name: {
+      type: String,
+    },
+    profile_img_url: {
+      type: String,
+      default:
+        "https://t3.ftcdn.net/jpg/05/16/27/58/360_F_516275801_f3Fsp17x6HQK0xQgDQEELoTuERO4SsWV.jpg",
+      trim: true,
+    },
+    contact: {
+      website: {
+        type: String,
+        trim: true,
+      },
+      instagram: {
+        type: String,
+        trim: true,
+      },
+      address: {
+        street: {
+          type: String,
+        },
+        city: {
+          type: String,
+        },
+        country: {
+          type: String,
+        },
+        postal_code: {
+          type: Number,
+        },
+        phone_number: {
+          type: Number,
+        },
+      },
+    },
+    tagline: {
+      type: String,
+    },
+    isArtist: {
+      type: Boolean,
+      default: false,
+    },
+    artist_statement: {
+      type: String,
+    },
+    artworks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Artwork",
+      },
+    ],
+    rentals: {
+      rentals_offering: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Rental",
+        },
+      ],
+      rentals_receiving: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Rental",
+        },
+      ],
+    },
+    favorites: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Artwork",
+      },
+    ],
   },
   {
-    // this second object adds extra properties: `createdAt` and `updatedAt`
     timestamps: true,
   }
 );
 
-const User = model("User", userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;
+
