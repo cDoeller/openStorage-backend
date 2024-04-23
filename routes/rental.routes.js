@@ -87,4 +87,16 @@ router.get("/:user_id/approved", (req, res) => {
     });
 });
 
+router.delete("/:id", (req,res)=>{
+  Rental.findByIdAndDelete(req.params.id)
+  .then((deletedRental) => {
+    console.log(deletedRental);
+    res.status(200).json(deletedRental);
+  })
+  .catch((err) => {
+    console.log(err);
+    res.status(400).json(err);
+  });
+})
+
 module.exports = router;

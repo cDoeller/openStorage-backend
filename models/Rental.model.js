@@ -15,15 +15,15 @@ const rentalSchema = new mongoose.Schema({
   },
   start_date: {
     type: Date,
-    required: [true, "Start Date is Required"]
+    required: [true, "Start Date is Required"],
   },
   end_date: {
     type: Date,
-    required: [true, "End Date is Required"]
+    required: [true, "End Date is Required"],
   },
   transportation: {
     type: String,
-    required: [true, "Choose a transportation type"]
+    required: [true, "Choose a transportation type"],
   },
   transportation_details: {
     type: Object,
@@ -31,9 +31,13 @@ const rentalSchema = new mongoose.Schema({
   message: {
     type: String,
   },
-  is_approved: {
-    type: Boolean,
-    default: false,
+  state: {
+    type: String,
+    default: "pending",
+    enum: {
+      values: ["accepted", "rejected", "pending"],
+      message: "{VALUE} is not supported",
+    },
   },
 });
 
