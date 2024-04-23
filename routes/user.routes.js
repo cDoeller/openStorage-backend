@@ -9,7 +9,7 @@ const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 router.get("/artists", (req, res) => {
   User.find({ isArtist: true })
     .select("user_name _id artworks")
-    .populate("artworks rentals favorites")
+    .populate("artworks favorites")
     .then((allArtists) => {
       res.status(200).json(allArtists);
     })
@@ -23,7 +23,7 @@ router.get("/artists", (req, res) => {
 router.get("/artists/works", (req, res) => {
   User.find({ $and: [{ isArtist: true }, { artworks: { $ne: [] } }] })
     .select("user_name _id artworks")
-    .populate("artworks rentals favorites")
+    .populate("artworks favorites")
     .then((allArtists) => {
       res.status(200).json(allArtists);
     })
@@ -37,7 +37,9 @@ router.get("/artists/works", (req, res) => {
 router.get("/:_id", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
     .select("-password")
-    .populate("artworks rentals favorites")
+    .populate("artworks favorites")
+    .populate({path: "rentals", populate: {path: "rentals_receiving", model:"Artwork"}})
+    .populate({path: "rentals", populate: {path: "rentals_offering", model:"Artwork"}})
     .then((oneUserData) => {
       res.status(200).json(oneUserData);
     })
@@ -77,7 +79,7 @@ router.patch(`/:_id/favorites`, isAuthenticated, (req, res) => {
 router.patch("/:_id/update", isAuthenticated, (req, res) => {
   User.findByIdAndUpdate(req.params._id, req.body, { new: true })
     .select("-password")
-    .populate("artworks rentals favorites")
+    .populate("artworks favorites")
     .then((updatedUser) => {
       res.status(200).json(updatedUser);
     })
