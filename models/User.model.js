@@ -21,7 +21,6 @@ const userSchema = new mongoose.Schema(
     },
     real_name: {
       type: String,
-      // required: [true, "Your real name is required."],
     },
     profile_img_url: {
       type: String,
@@ -41,23 +40,18 @@ const userSchema = new mongoose.Schema(
       address: {
         street: {
           type: String,
-          // required: [true, "Street name is required."],
         },
         city: {
           type: String,
-          // required: [true, "City is required."],
         },
         country: {
           type: String,
-          // required: [true, "Country info is required."],
         },
         postal_code: {
           type: Number,
-          // required: [true, "Postal code is required."],
         },
         phone_number: {
           type: Number,
-          // required: [true, "Phone number is required."],
         },
       },
     },

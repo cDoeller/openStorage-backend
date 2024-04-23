@@ -4,35 +4,35 @@ const artworkSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
+      required: [true, "Artwork title is Required"],
     },
     year: {
       type: Number,
     },
     city: {
       type: String,
-      required: true,
+      required: [true, "City is Required"],
     },
     dimensions: {
       x: {
         type: Number,
-        required: true,
-        min: 1,
+        required: [true, "Dimensions is Required"],
+        min: [1, "Dimensions (w) musst be bigger than 0"],
       },
       y: {
         type: Number,
         required: true,
-        min: 1,
+        min: [1, "Dimensions (h) musst be bigger than 0"],
       },
       z: {
         type: Number,
         default: 0,
-        min: 0,
+        min: [0, "Dimensions (d) musst be at least 0"],
       },
     },
     images_url: {
       type: [String],
-      required: true,
+      required: [true, "Upload at least one image"],
       trim: true, // does trim work on string array?
     },
     artist: {
@@ -41,19 +41,45 @@ const artworkSchema = new mongoose.Schema(
     },
     medium: {
       type: String,
-      enum: ["Painting", "Sculpture", "Photography"],
+      enum: {
+        values: [
+          "Painting",
+          "Sculpture",
+          "Photography",
+          "Installation",
+          "Drawing",
+          "Print",
+          "Collage",
+          "Mixed Media",
+        ],
+        message: "{VALUE} is not supported",
+      },
     },
     genre: {
       type: String,
-      enum: [
-        "Surreal",
-        "Dada",
-        "Minimalism",
-        "Digital Art",
-        "Abstract",
-        "Figurative",
-        "Conceptual Art",
-      ],
+      enum: {
+        values: [
+          "Surreal",
+          "Minimal",
+          "Real",
+          "Natural",
+          "Dada",
+          "Arte Povera",
+          "Pop",
+          "Ready Made",
+          "Digital",
+          "Abstract",
+          "Assemblage",
+          "Concrete",
+          "Kinetic",
+          "Figurative",
+          "Conceptual",
+          "Political",
+          "Interactive",
+          "Art & Design",
+        ],
+        message: "{VALUE} is not supported",
+      },
     },
     is_borrowed: {
       type: Boolean,

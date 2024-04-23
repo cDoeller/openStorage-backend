@@ -23,7 +23,7 @@ const rentalSchema = new mongoose.Schema({
   },
   transportation: {
     type: String,
-    required: true,
+    required: [true, "Choose a transportation type"]
   },
   transportation_details: {
     type: Object,
