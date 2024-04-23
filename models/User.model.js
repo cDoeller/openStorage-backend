@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
 
-// TODO: Please make sure you edit the User model to whatever makes sense in this case
 const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
       required: [true, "Email is required."],
-      unique: [true, "Email already exists."],
+      unique: true, // error handeling via err-code needed?
       lowercase: true,
       trim: true,
     },
@@ -16,12 +15,11 @@ const userSchema = new mongoose.Schema(
     },
     user_name: {
       type: String,
-      unique: [true, "User already exists."],
+      unique: true, // error handeling via err-code needed?
       required: [true, "User name is required."],
     },
     real_name: {
       type: String,
-      // required: [true, "Your real name is required."],
     },
     profile_img_url: {
       type: String,
@@ -41,23 +39,18 @@ const userSchema = new mongoose.Schema(
       address: {
         street: {
           type: String,
-          // required: [true, "Street name is required."],
         },
         city: {
           type: String,
-          // required: [true, "City is required."],
         },
         country: {
           type: String,
-          // required: [true, "Country info is required."],
         },
         postal_code: {
           type: Number,
-          // required: [true, "Postal code is required."],
         },
         phone_number: {
           type: Number,
-          // required: [true, "Phone number is required."],
         },
       },
     },

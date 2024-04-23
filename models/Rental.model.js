@@ -15,15 +15,15 @@ const rentalSchema = new mongoose.Schema({
   },
   start_date: {
     type: Date,
-    required: true,
+    required: [true, "Start Date is Required"]
   },
   end_date: {
     type: Date,
-    required: true,
+    required: [true, "End Date is Required"]
   },
   transportation: {
     type: String,
-    required: true,
+    required: [true, "Choose a transportation type"]
   },
   transportation_details: {
     type: Object,

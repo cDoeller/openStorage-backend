@@ -11,11 +11,11 @@ router.get("/artists", (req, res) => {
     .select("user_name _id artworks")
     .populate("artworks rentals favorites")
     .then((allArtists) => {
-      res.json(allArtists);
+      res.status(200).json(allArtists);
     })
     .catch((err) => {
       console.log(err);
-      res.json(err);
+      res.status(400).json(err);
     });
 });
 
@@ -25,23 +25,26 @@ router.get("/artists/works", (req, res) => {
     .select("user_name _id artworks")
     .populate("artworks rentals favorites")
     .then((allArtists) => {
-      res.json(allArtists);
+      res.status(200).json(allArtists);
     })
     .catch((err) => {
       console.log(err);
-      res.json(err);
+      res.status(400).json(err);
     });
 });
 
-// GET  all data of one user
+// GET all data of one user
 router.get("/:_id", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
     .select("-password")
     .populate("artworks rentals favorites")
     .then((oneUserData) => {
-      res.json(oneUserData);
+      res.status(200).json(oneUserData);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
 });
 
 // GET all favorites of one user
@@ -49,9 +52,12 @@ router.get("/:_id/favorites", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
     .select("favorites -_id")
     .then((oneUserFavorites) => {
-      res.json(oneUserFavorites);
+      res.status(200).json(oneUserFavorites);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
 });
 
 // UPDATE user Favorites
@@ -59,9 +65,12 @@ router.patch(`/:_id/favorites`, isAuthenticated, (req, res) => {
   User.findByIdAndUpdate(req.params._id, { favorites: req.body }, { new: true })
     .select("favorites -_id")
     .then((oneUserFavorites) => {
-      res.json(oneUserFavorites);
+      res.status(200).json(oneUserFavorites);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
 });
 
 // UPDATE one user
@@ -70,11 +79,11 @@ router.patch("/:_id/update", isAuthenticated, (req, res) => {
     .select("-password")
     .populate("artworks rentals favorites")
     .then((updatedUser) => {
-      res.json(updatedUser);
+      res.status(200).json(updatedUser);
     })
     .catch((err) => {
       console.log(err);
-      res.json(err);
+      res.status(400).json(err);
     });
 });
 
@@ -82,50 +91,11 @@ router.patch("/:_id/update", isAuthenticated, (req, res) => {
 router.delete("/:_id/delete", isAuthenticated, (req, res) => {
   User.findByIdAndDelete(req.params._id)
     .then((deletedArtist) => {
-      res.json(deletedArtist);
+      res.status(200).json(deletedArtist);
     })
     .catch((err) => {
       console.log(err);
-      res.json(err);
-    });
-});
-
-// UPDATE password-reset --> change PWD
-router.put("/:_id/pwd", isAuthenticated, (req, res) => {
-  // check pwd regex / empty
-  const { password, new_password } = req.body;
-  // Check if email or password or name are provided as empty strings
-  if (password === "" || new_password === "") {
-    res.status(400).json({ message: "Provide old and new password" });
-    return;
-  }
-  const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
-  if (!passwordRegex.test(new_password)) {
-    res.status(400).json({
-      message:
-        "New password must have at least 6 characters and contain at least one number, one lowercase and one uppercase letter.",
-    });
-    return;
-  }
-
-  // make salt + hash pw
-  const salt = bcrypt.genSaltSync(saltRounds);
-  const newHashedPassword = bcrypt.hashSync(new_password, salt);
-
-  // 1) find user in DB
-  // 2) update user pw in db
-  // 3) send back success message
-  User.findById(req.params._id)
-    .then((userData) => {
-      userData.password = newHashedPassword;
-      return userData;
-    })
-    .then((userData) => {
-      User.findByIdAndUpdate(req.params._id, userData)
-        .then(() => {
-          res.json({ message: "Your password has been updated." });
-        })
-        .catch((err) => console.log(err));
+      res.status(400).json(err);
     });
 });
 

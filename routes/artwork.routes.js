@@ -6,7 +6,8 @@ const router = require("express").Router();
 
 const fileUploader = require("../config/cloudinary.config");
 
-// UPLOAD IMAGE
+
+// UPLOAD IMAGE ----- TO DO 
 router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
   // console.log("file is: ", req.file)
   if (!req.file) {
@@ -15,8 +16,9 @@ router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
   }
   // Get the URL of the uploaded file and send it as a response.
   // 'fileUrl' can be any name, just make sure you remember to use the same when accessing it on the frontend
-  res.json({ fileUrl: req.file.path });
+  res.status(200).json({ fileUrl: req.file.path });
 });
+
 
 // GET all artworks
 router.get("/", (req, res) => {
@@ -24,11 +26,11 @@ router.get("/", (req, res) => {
     .populate("artist")
     .then((Artworks) => {
       console.log(Artworks);
-      res.json(Artworks);
+      res.status(200).json(Artworks);
     })
     .catch((err) => {
       console.log(err);
-      res.json(err);
+      res.status(400).json(err);
     });
 });
 
@@ -39,11 +41,11 @@ router.get("/recent", (req, res) => {
     .populate("artist")
     .then((Artworks) => {
       // console.log(Artworks);
-      res.json(Artworks);
+      res.status(200).json(Artworks);
     })
     .catch((err) => {
       console.log(err);
-      res.json(err);
+      res.status(400).json(err);
     });
 });
 
@@ -52,11 +54,11 @@ router.get("/cities", (req, res) => {
   Artwork.distinct("city")
     .then((Artworks) => {
       // console.log(Artworks);
-      res.json(Artworks);
+      res.status(200).json(Artworks);
     })
     .catch((err) => {
       console.log(err);
-      res.json(err);
+      res.status(400).json(err);
     });
 });
 
@@ -86,11 +88,11 @@ router.get("/search", (req, res) => {
   Artwork.find(searchQuery)
     .populate("artist")
     .then((foundArtworks) => {
-      res.json(foundArtworks);
+      res.status(200).json(foundArtworks);
     })
     .catch((err) => {
       console.log(err);
-      res.json(err);
+      res.status(400).json(err);
     });
 });
 
@@ -100,15 +102,15 @@ router.get("/:id", (req, res) => {
     .populate("artist")
     .then((oneArtwork) => {
       console.log(oneArtwork);
-      res.json(oneArtwork);
+      res.status(200).json(oneArtwork);
     })
     .catch((err) => {
       console.log(err);
+      res.status(400).json(err);
     });
 });
 
 // POST a new artwork async
-
 router.post("/", async (req, res) => {
   try {
     const newArtwork = await Artwork.create(req.body);
@@ -117,13 +119,12 @@ router.post("/", async (req, res) => {
       { $push: { artworks: newArtwork._id } },
       { new: true }
     );
-
     console.log(newArtwork);
     console.log(updatedArtist);
-    res.json({ newArtwork: newArtwork, updatedArtist: updatedArtist });
+    res.status(200).json({ newArtwork: newArtwork, updatedArtist: updatedArtist });
   } catch (err) {
     console.log(err);
-    res.json(err);
+    res.status(400).json(err);
   }
 });
 
@@ -132,11 +133,11 @@ router.patch("/:id", (req, res) => {
   Artwork.findByIdAndUpdate(req.params.id, req.body, { new: true })
     .then((updatedArtwork) => {
       console.log(updatedArtwork);
-      res.json(updatedArtwork);
+      res.status(200).json(updatedArtwork);
     })
     .catch((err) => {
       console.log(err);
-      res.json(err);
+      res.status(400).json(err);
     });
 });
 
@@ -145,11 +146,11 @@ router.delete("/:id", (req, res) => {
   Artwork.findByIdAndDelete(req.params.id)
     .then((deletedArtwork) => {
       console.log(deletedArtwork);
-      res.json(deletedArtwork);
+      res.status(200).json(deletedArtwork);
     })
     .catch((err) => {
       console.log(err);
-      res.json(err);
+      res.status(400).json(err);
     });
 });
 
