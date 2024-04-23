@@ -18,6 +18,7 @@ router.post("/", async (req, res) => {
       { $push: { "rentals.rentals_receiving": newRental._id } },
       { new: true }
     );
+    res.status(200).json(newRental);
   } catch (err) {
     console.log(err);
     res.status(400).json(err);
@@ -33,10 +34,10 @@ router.patch("/:id", async (req, res) => {
       { new: true }
     );
     console.log(updatedRental);
-    res.json(updatedRental);
+    res.status(200).json(updatedRental);
   } catch (err) {
     console.log(err);
-    res.json(err);
+    res.status(400).json(err);
   }
 });
 
@@ -46,11 +47,11 @@ router.get("/:id", (req, res) => {
     .populate("artist artwork user_borrowing")
     .then((oneRental) => {
       console.log(oneRental);
-      res.json(oneRental);
+      res.status(200).json(oneRental);
     })
     .catch((err) => {
       console.log(err);
-      res.json(err);
+      res.status(400).json(err);
     });
 });
 
@@ -62,11 +63,11 @@ router.get("/:user_id/pending", (req, res) => {
     .populate("artist artwork user_borrowing")
     .then((pendingRequests) => {
       console.log(pendingRequests);
-      res.json(pendingRequests);
+      res.status(200).json(pendingRequests);
     })
     .catch((err) => {
       console.log(err);
-      res.json(err);
+      res.status(400).json(err);
     });
 });
 
@@ -78,11 +79,11 @@ router.get("/:user_id/approved", (req, res) => {
     .populate("artist artwork user_borrowing")
     .then((approvedRentals) => {
       console.log(approvedRentals);
-      res.json(approvedRentals);
+      res.status(200).json(approvedRentals);
     })
     .catch((err) => {
       console.log(err);
-      res.json(err);
+      res.status(400).json(err);
     });
 });
 

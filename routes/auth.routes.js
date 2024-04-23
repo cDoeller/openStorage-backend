@@ -16,7 +16,9 @@ const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 // How many rounds should bcrypt run the salt (default - 10 rounds)
 const saltRounds = 10;
 
-// ******** POST ******** /auth/signup - Creates a new user in the database
+
+// *** SIGN UP ROUTE 
+// Creates a new user in the database
 router.post("/signup", (req, res, next) => {
   const { email, password, user_name } = req.body;
 
@@ -71,10 +73,13 @@ router.post("/signup", (req, res, next) => {
       // Send a json response containing the user object
       res.status(201).json({ user: user });
     })
-    .catch((err) => next(err)); // In this case, we send error handling to the error handling middleware.
+    // In this case, we send error handling to the error handling middleware.
+    .catch((err) => next(err));
 });
 
-// ******** POST ********  /auth/login - Verifies email and password and returns a JWT
+
+// *** LOGIN ROUTE 
+// Verifies email and password and returns a JWT
 router.post("/login", (req, res, next) => {
   const { email, password } = req.body;
 
@@ -118,7 +123,9 @@ router.post("/login", (req, res, next) => {
     .catch((err) => next(err)); // In this case, we send error handling to the error handling middleware.
 });
 
-// ******** GET ********  /auth/verify  -  Used to verify JWT stored on the client
+
+// *** VERIFY ROUTE
+// Used to verify JWT stored on the client
 router.get("/verify", isAuthenticated, (req, res, next) => {
   // If JWT token is valid the payload gets decoded by the
   // isAuthenticated middleware and is made available on `req.payload`
@@ -127,5 +134,6 @@ router.get("/verify", isAuthenticated, (req, res, next) => {
   // Send back the token payload object containing the user data
   res.status(200).json(req.payload);
 });
+
 
 module.exports = router;

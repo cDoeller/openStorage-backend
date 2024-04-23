@@ -45,6 +45,7 @@ const artworkSchema = new mongoose.Schema(
         values: [
           "Painting",
           "Sculpture",
+          "Object",
           "Photography",
           "Installation",
           "Drawing",

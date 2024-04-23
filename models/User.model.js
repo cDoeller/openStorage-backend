@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
 
-// TODO: Please make sure you edit the User model to whatever makes sense in this case
 const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
       required: [true, "Email is required."],
-      unique: [true, "Email already exists."],
+      unique: true, // error handeling via err-code needed?
       lowercase: true,
       trim: true,
     },
@@ -16,7 +15,7 @@ const userSchema = new mongoose.Schema(
     },
     user_name: {
       type: String,
-      unique: [true, "User already exists."],
+      unique: true, // error handeling via err-code needed?
       required: [true, "User name is required."],
     },
     real_name: {
