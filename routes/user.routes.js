@@ -10,7 +10,6 @@ router.get("/artists", (req, res) => {
   User.find({ isArtist: true })
     .select("user_name _id artworks")
     .populate("artworks favorites")
-    .populate({path:"rentals", populate: "rentals_offering rentals_receiving"})
     .then((allArtists) => {
       res.json(allArtists);
     })
@@ -25,7 +24,6 @@ router.get("/artists/works", (req, res) => {
   User.find({ $and: [{ isArtist: true }, { artworks: { $ne: [] } }] })
     .select("user_name _id artworks")
     .populate("artworks favorites")
-    .populate({path:"rentals", populate: "rentals_offering rentals_receiving"})
     .then((allArtists) => {
       res.json(allArtists);
     })
@@ -73,7 +71,6 @@ router.patch("/:_id/update", isAuthenticated, (req, res) => {
   User.findByIdAndUpdate(req.params._id, req.body, { new: true })
     .select("-password")
     .populate("artworks favorites")
-    .populate({path: "rentals", populate: "rentals_receiving rentals_offering"})
     .then((updatedUser) => {
       res.json(updatedUser);
     })
