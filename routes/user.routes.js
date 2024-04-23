@@ -40,7 +40,8 @@ router.get("/:_id", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
     .select("-password")
     .populate("artworks favorites")
-    .populate({path: "rentals", populate: "rentals_receiving rentals_offering"})
+    .populate({path: "rentals", populate: {path: "rentals_receiving", model:"Artwork"}})
+    .populate({path: "rentals", populate: {path: "rentals_offering", model:"Artwork"}})
     .then((oneUserData) => {
       res.json(oneUserData);
     })
