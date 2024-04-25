@@ -53,6 +53,7 @@ router.get("/:_id", isAuthenticated, (req, res) => {
 router.get("/:_id/favorites", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
     .select("favorites -_id")
+    .populate("favorites")
     .then((oneUserFavorites) => {
       res.status(200).json(oneUserFavorites);
     })
