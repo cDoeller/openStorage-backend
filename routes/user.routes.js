@@ -54,6 +54,7 @@ router.get("/:_id/favorites", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
     .select("favorites -_id")
     .populate("favorites")
+    .populate({path: "favorites", populate: {path: "artist", model:"User"}})
     .then((oneUserFavorites) => {
       res.status(200).json(oneUserFavorites);
     })
