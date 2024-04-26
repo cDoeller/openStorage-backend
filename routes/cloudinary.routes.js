@@ -3,8 +3,8 @@ const router = require("express").Router()
 
 const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 
-router.post("/", fileUploader.single("imageUrl"), (req,res,next)=>{
-    // console.log("file is: ", req.file)
+router.post("/", fileUploader.single("imageUrl"), isAuthenticated, (req,res,next)=>{
+    console.log("file is: ", req.file)
 
     if(!req.file){
         next(new Error("No File Uploaded!"))
