@@ -113,6 +113,7 @@ router.get("/:id", (req, res) => {
 // POST a new artwork async
 router.post("/", async (req, res) => {
   try {
+    console.log(req.body)
     const newArtwork = await Artwork.create(req.body);
     const updatedArtist = await User.findByIdAndUpdate(
       req.body.artist,
