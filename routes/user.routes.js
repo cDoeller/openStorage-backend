@@ -64,6 +64,21 @@ router.get("/:_id/favorites", isAuthenticated, (req, res) => {
     });
 });
 
+// GETT all rentals of one user 
+router.get("/:_id/rentals", isAuthenticated, (req, res) => {
+  User.findById(req.params._id)
+    .select("rentals")
+    .populate("rentals")
+    .populate({path: "rentals", populate: {path: "rentals_receiving", model:"Rental"}})
+    .then((oneUserRentals) => {
+      res.status(200).json(oneUserRentals);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+});
+
 // UPDATE user Favorites
 router.patch(`/:_id/favorites`, isAuthenticated, (req, res) => {
   User.findByIdAndUpdate(req.params._id, { favorites: req.body }, { new: true })
