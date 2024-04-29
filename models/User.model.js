@@ -90,6 +90,26 @@ const userSchema = new mongoose.Schema(
         ref: "Artwork",
       },
     ],
+    notifications: [
+      {
+        type: {
+          type: String,
+          enum: ["new-request", "change-request", "confirm"],
+        },
+        request: {
+          type: mongoose.Schema.Types.ObjectId,
+          default: "Rental",
+        },
+        isNew: {
+          type: Boolean,
+          default: true,
+        },
+        message: {
+          type: String,
+          default: "",
+        }
+      },
+    ],
   },
   {
     timestamps: true,
@@ -99,4 +119,3 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
-
