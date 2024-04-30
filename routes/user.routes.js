@@ -37,14 +37,15 @@ router.get("/artists/works", (req, res) => {
 router.get("/:_id", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
     .select("-password")
-    .populate("artworks favorites")
     .populate({
-      path: "rentals",
-      populate: { path: "rentals_receiving", model: "Artwork" },
+      path: "artworks favorites",
     })
     .populate({
-      path: "rentals",
-      populate: { path: "rentals_offering", model: "Artwork" },
+      path: "rentals.rentals_receiving rentals.rentals_offering",
+      populate: {
+        path: "artwork",
+        model: "Artwork"
+      }
     })
     .then((oneUserData) => {
       res.status(200).json(oneUserData);
