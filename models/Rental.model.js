@@ -35,7 +35,7 @@ const rentalSchema = new mongoose.Schema({
     type: String,
     default: "pending",
     enum: {
-      values: ["accepted", "rejected", "pending"],
+      values: ["accepted", "rejected", "pending", "cancelled"],
       message: "{VALUE} is not supported",
     },
   },

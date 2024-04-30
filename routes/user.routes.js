@@ -199,6 +199,44 @@ router.get("/:_id/notifications", isAuthenticated, (req, res) => {
     });
 });
 
+// UPDATE one notification of one user of sub-schema
+router.patch("/:_id/notifications/:notification_id", (req, res) => {
+  const _id = req.params._id;
+  const notification_id = req.params.notification_id;
+  const data = req.body;
+  // remove only one object from array of objects with $pull
+  User.findOneAndUpdate(
+    { _id, "notifications._id": notification_id },
+    { $set: { "notifications.$": data } },
+    { new: true }
+  )
+    .select("notifications -_id")
+    .populate({
+      path: "notifications",
+      populate: {
+        path: "request",
+        model: "Rental",
+        populate: [
+          {
+            path: "artwork",
+            model: "Artwork",
+          },
+          {
+            path: "user_borrowing",
+            model: "User",
+          },
+        ],
+      },
+    })
+    .then((response) => {
+      res.status(200).json(response);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+});
+
 // DELETE one notification of one user of sub-schema
 router.delete("/:_id/notifications/:notification_id", (req, res) => {
   const _id = req.params._id;
