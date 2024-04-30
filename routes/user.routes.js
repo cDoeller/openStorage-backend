@@ -38,8 +38,14 @@ router.get("/:_id", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
     .select("-password")
     .populate("artworks favorites")
-    .populate({path: "rentals", populate: {path: "rentals_receiving", model:"Artwork"}})
-    .populate({path: "rentals", populate: {path: "rentals_offering", model:"Artwork"}})
+    .populate({
+      path: "rentals",
+      populate: { path: "rentals_receiving", model: "Artwork" },
+    })
+    .populate({
+      path: "rentals",
+      populate: { path: "rentals_offering", model: "Artwork" },
+    })
     .then((oneUserData) => {
       res.status(200).json(oneUserData);
     })
@@ -54,7 +60,10 @@ router.get("/:_id/favorites", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
     .select("favorites -_id")
     .populate("favorites")
-    .populate({path: "favorites", populate: {path: "artist", model:"User"}})
+    .populate({
+      path: "favorites",
+      populate: { path: "artist", model: "User" },
+    })
     .then((oneUserFavorites) => {
       res.status(200).json(oneUserFavorites);
     })
@@ -64,12 +73,15 @@ router.get("/:_id/favorites", isAuthenticated, (req, res) => {
     });
 });
 
-// GETT all rentals of one user 
+// GETT all rentals of one user
 router.get("/:_id/rentals", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
     .select("rentals")
     .populate("rentals")
-    .populate({path: "rentals", populate: {path: "rentals_receiving", model:"Rental"}})
+    .populate({
+      path: "rentals",
+      populate: { path: "rentals_receiving", model: "Rental" },
+    })
     .then((oneUserRentals) => {
       res.status(200).json(oneUserRentals);
     })
@@ -111,6 +123,112 @@ router.delete("/:_id/delete", isAuthenticated, (req, res) => {
   User.findByIdAndDelete(req.params._id)
     .then((deletedArtist) => {
       res.status(200).json(deletedArtist);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+});
+
+// NOTIFICATIONS
+// -----> add is authenticated
+
+// POST one notification in sub-schema
+router.post("/:_id/notifications", (req, res) => {
+  const _id = req.params._id;
+  const newNotification = req.body;
+  User.findByIdAndUpdate(
+    _id,
+    { $push: { notifications: newNotification } },
+    { new: true }
+  )
+    .select("notifications -_id")
+    .populate({
+      path: "notifications",
+      populate: {
+        path: "request",
+        model: "Rental",
+        populate: [
+          {
+            path: "artwork",
+            model: "Artwork",
+          },
+          {
+            path: "user_borrowing",
+            model: "User",
+          },
+        ],
+      },
+    })
+    .then((updatedUser) => {
+      res.status(200).json(updatedUser.notifications);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+});
+
+// GET all notifications of one user
+router.get("/:_id/notifications", isAuthenticated, (req, res) => {
+  User.findById(req.params._id)
+    .select("notifications -_id")
+    .populate({
+      path: "notifications",
+      populate: {
+        path: "request",
+        model: "Rental",
+        populate: [
+          {
+            path: "artwork",
+            model: "Artwork",
+          },
+          {
+            path: "user_borrowing",
+            model: "User",
+          },
+        ],
+      },
+    })
+    .then((oneUserNotifications) => {
+      res.status(200).json(oneUserNotifications);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+});
+
+// DELETE one notification of one user of sub-schema
+router.delete("/:_id/notifications/:notification_id", (req, res) => {
+  const _id = req.params._id;
+  const notification_id = req.params.notification_id;
+  // remove only one object from array of objects with $pull
+  User.findByIdAndUpdate(
+    _id,
+    { $pull: { notifications: { _id: notification_id } } },
+    { new: true }
+  )
+    .select("notifications -_id")
+    .populate({
+      path: "notifications",
+      populate: {
+        path: "request",
+        model: "Rental",
+        populate: [
+          {
+            path: "artwork",
+            model: "Artwork",
+          },
+          {
+            path: "user_borrowing",
+            model: "User",
+          },
+        ],
+      },
+    })
+    .then((response) => {
+      res.status(200).json(response);
     })
     .catch((err) => {
       console.log(err);

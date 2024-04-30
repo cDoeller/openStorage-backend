@@ -1,5 +1,27 @@
 const mongoose = require("mongoose");
 
+const notificationSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      enum: ["new-request", "change-request", "confirm"],
+    },
+    request: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Rental",
+    },
+    isNew: {
+      type: Boolean,
+      default: true,
+    },
+    message: {
+      type: String,
+      default: "",
+    },
+  },
+  { _id: true }
+);
+
 const userSchema = new mongoose.Schema(
   {
     email: {
@@ -90,6 +112,7 @@ const userSchema = new mongoose.Schema(
         ref: "Artwork",
       },
     ],
+    notifications: [notificationSchema],
   },
   {
     timestamps: true,
@@ -99,4 +122,3 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
-
