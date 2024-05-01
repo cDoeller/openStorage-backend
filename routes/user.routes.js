@@ -239,6 +239,25 @@ router.get("/:_id/notifications/:_requestId", isAuthenticated, (req, res) => {
     });
 });
 
+// UPDATE one notification, "new" field only
+router.patch("/:_id/notifications/:notification_id/new", (req, res) => {
+  const _id = req.params._id;
+  const notification_id = req.params.notification_id;
+  const data = req.body;
+  User.findOneAndUpdate(
+    { _id, "notifications._id": notification_id },
+    { $set: { "notifications.$.new": data.new } },
+    { new: true }
+  )
+    .then((response) => {
+      res.status(200).json(response);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+});
+
 // UPDATE one notification of one user of sub-schema
 router.patch("/:_id/notifications/:notification_id", (req, res) => {
   const _id = req.params._id;
