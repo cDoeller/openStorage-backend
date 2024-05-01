@@ -209,7 +209,10 @@ router.get("/:_id/notifications/:_requestId", isAuthenticated, (req, res)=>{
     match: { request: { $elemMatch: { _id: requestId } }}
   })
   .then((oneUserOneNotification) => {
-    res.status(200).json(oneUserOneNotification);
+    const notificationId = oneUserOneNotification.notifications[0]._id;
+    const response = {_id: notificationId}
+    res.status(200).json(response);
+    // res.status(200).json(oneUserOneNotification);
   })
   .catch((err) => {
     console.log(err);
