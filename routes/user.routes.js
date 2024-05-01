@@ -44,8 +44,8 @@ router.get("/:_id", isAuthenticated, (req, res) => {
       path: "rentals.rentals_receiving rentals.rentals_offering",
       populate: {
         path: "artwork",
-        model: "Artwork"
-      }
+        model: "Artwork",
+      },
     })
     .then((oneUserData) => {
       res.status(200).json(oneUserData);
@@ -170,6 +170,25 @@ router.post("/:_id/notifications", (req, res) => {
     });
 });
 
+// GET if has new notifications
+router.get("/:_id/notifications/hasNew", isAuthenticated, (req, res) => {
+  User.findById(req.params._id)
+    .select("notifications -_id")
+    .populate({
+      path: "notifications",
+      match: { isNew: true },
+    })
+    .then((oneUserNewNotifications) => {
+      let hasNewNotifications =
+        oneUserNewNotifications.notifications.length > 0;
+      res.status(200).json({ hasNew: hasNewNotifications });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+});
+
 // GET all notifications of one user
 router.get("/:_id/notifications", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
@@ -200,25 +219,25 @@ router.get("/:_id/notifications", isAuthenticated, (req, res) => {
     });
 });
 
-router.get("/:_id/notifications/:_requestId", isAuthenticated, (req, res)=>{
+router.get("/:_id/notifications/:_requestId", isAuthenticated, (req, res) => {
   const requestId = req.params._requestId;
   User.findById(req.params._id)
-  .select("notifications -_id")
-  .populate({
-    path: "notifications",
-    match: { request: { $elemMatch: { _id: requestId } }}
-  })
-  .then((oneUserOneNotification) => {
-    const notificationId = oneUserOneNotification.notifications[0]._id;
-    const response = {_id: notificationId}
-    res.status(200).json(response);
-    // res.status(200).json(oneUserOneNotification);
-  })
-  .catch((err) => {
-    console.log(err);
-    res.status(400).json(err);
-  });
-})
+    .select("notifications -_id")
+    .populate({
+      path: "notifications",
+      match: { request: { $elemMatch: { _id: requestId } } },
+    })
+    .then((oneUserOneNotification) => {
+      const notificationId = oneUserOneNotification.notifications[0]._id;
+      const response = { _id: notificationId };
+      res.status(200).json(response);
+      // res.status(200).json(oneUserOneNotification);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+});
 
 // UPDATE one notification of one user of sub-schema
 router.patch("/:_id/notifications/:notification_id", (req, res) => {
