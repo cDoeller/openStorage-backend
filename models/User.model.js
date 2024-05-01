@@ -14,6 +14,10 @@ const notificationSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    text: {
+      type: String,
+      default: "",
+    },
     message: {
       type: String,
       default: "",
