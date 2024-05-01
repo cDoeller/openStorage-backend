@@ -200,12 +200,28 @@ router.get("/:_id/notifications", isAuthenticated, (req, res) => {
     });
 });
 
+router.get("/:_id/notifications/:_requestId", isAuthenticated, (req, res)=>{
+  const requestId = req.params._requestId;
+  User.findById(req.params._id)
+  .select("notifications -_id")
+  .populate({
+    path: "notifications",
+    match: { request: { $elemMatch: { _id: requestId } }}
+  })
+  .then((oneUserOneNotification) => {
+    res.status(200).json(oneUserOneNotification);
+  })
+  .catch((err) => {
+    console.log(err);
+    res.status(400).json(err);
+  });
+})
+
 // UPDATE one notification of one user of sub-schema
 router.patch("/:_id/notifications/:notification_id", (req, res) => {
   const _id = req.params._id;
   const notification_id = req.params.notification_id;
   const data = req.body;
-  // remove only one object from array of objects with $pull
   User.findOneAndUpdate(
     { _id, "notifications._id": notification_id },
     { $set: { "notifications.$": data } },
