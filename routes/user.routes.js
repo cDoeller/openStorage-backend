@@ -179,9 +179,9 @@ router.get("/:_id/notifications/hasNew", isAuthenticated, (req, res) => {
       match: { isNew: true },
     })
     .then((oneUserNewNotifications) => {
-      let hasNewNotifications =
-        oneUserNewNotifications.notifications.length > 0;
-      res.status(200).json({ hasNew: hasNewNotifications });
+      let newNotificationsAmount =
+        oneUserNewNotifications.notifications.length;
+      res.status(200).json({ newNotifications: newNotificationsAmount });
     })
     .catch((err) => {
       console.log(err);
