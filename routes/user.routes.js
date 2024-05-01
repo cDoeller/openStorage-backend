@@ -176,7 +176,7 @@ router.get("/:_id/notifications/hasNew", isAuthenticated, (req, res) => {
     .select("notifications -_id")
     .populate({
       path: "notifications",
-      match: { isNew: true },
+      match: { new: true },
     })
     .then((oneUserNewNotifications) => {
       let newNotificationsAmount =

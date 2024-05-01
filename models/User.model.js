@@ -10,7 +10,7 @@ const notificationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Rental",
     },
-    isNew: {
+    new: {
       type: Boolean,
       default: true,
     },
