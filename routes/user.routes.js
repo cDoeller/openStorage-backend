@@ -242,6 +242,23 @@ router.post("/:_id/notifications", (req, res) => {
     });
 });
 
+// GET if has new notifications
+router.get("/:_id/notifications/hasNew", isAuthenticated, (req, res) => {
+  User.findById(req.params._id)
+    .select("notifications -_id")
+    .then((oneUserNotifications) => {
+    const NewNotifications = oneUserNotifications.notifications.filter((notification)=>{
+      return (notification.new===true);
+    })
+    const amountNewNotifications = NewNotifications.length;
+      res.status(200).json({ newNotifications: amountNewNotifications });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+});
+
 // GET all notifications of one user
 router.get("/:_id/notifications", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
@@ -272,12 +289,50 @@ router.get("/:_id/notifications", isAuthenticated, (req, res) => {
     });
 });
 
+router.get("/:_id/notifications/:_requestId", isAuthenticated, (req, res) => {
+  const requestId = req.params._requestId;
+  User.findById(req.params._id)
+    .select("notifications -_id")
+    .populate({
+      path: "notifications",
+      match: { request: { $elemMatch: { _id: requestId } } },
+    })
+    .then((oneUserOneNotification) => {
+      const notificationId = oneUserOneNotification.notifications[0]._id;
+      const response = { _id: notificationId };
+      res.status(200).json(response);
+      // res.status(200).json(oneUserOneNotification);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+});
+
+// UPDATE one notification, "new" field only
+router.patch("/:_id/notifications/:notification_id/new", (req, res) => {
+  const _id = req.params._id;
+  const notification_id = req.params.notification_id;
+  const data = req.body;
+  User.findOneAndUpdate(
+    { _id, "notifications._id": notification_id },
+    { $set: { "notifications.$.new": data.new } },
+    { new: true }
+  )
+    .then((response) => {
+      res.status(200).json(response);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+});
+
 // UPDATE one notification of one user of sub-schema
 router.patch("/:_id/notifications/:notification_id", (req, res) => {
   const _id = req.params._id;
   const notification_id = req.params.notification_id;
   const data = req.body;
-  // remove only one object from array of objects with $pull
   User.findOneAndUpdate(
     { _id, "notifications._id": notification_id },
     { $set: { "notifications.$": data } },

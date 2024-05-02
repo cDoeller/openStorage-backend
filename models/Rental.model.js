@@ -31,6 +31,15 @@ const rentalSchema = new mongoose.Schema({
   message: {
     type: String,
   },
+  change_request: {
+    change_requested: {
+      type: Boolean,
+      default: false,
+    },
+    new_end_date: {
+      type: Date,
+    },
+  },
   state: {
     type: String,
     default: "pending",
