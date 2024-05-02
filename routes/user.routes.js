@@ -174,14 +174,12 @@ router.post("/:_id/notifications", (req, res) => {
 router.get("/:_id/notifications/hasNew", isAuthenticated, (req, res) => {
   User.findById(req.params._id)
     .select("notifications -_id")
-    .populate({
-      path: "notifications",
-      match: { new: true },
+    .then((oneUserNotifications) => {
+    const NewNotifications = oneUserNotifications.notifications.filter((notification)=>{
+      return (notification.new===true);
     })
-    .then((oneUserNewNotifications) => {
-      let newNotificationsAmount =
-        oneUserNewNotifications.notifications.length;
-      res.status(200).json({ newNotifications: newNotificationsAmount });
+    const amountNewNotifications = NewNotifications.length;
+      res.status(200).json({ newNotifications: amountNewNotifications });
     })
     .catch((err) => {
       console.log(err);
