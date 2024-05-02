@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const User = require("../models/User.model");
-const Artwork = require("../models/Artwork.model")
+const Artwork = require("../models/Artwork.model");
 
 const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 
@@ -121,51 +121,73 @@ router.patch("/:_id/update", isAuthenticated, (req, res) => {
 });
 
 // UPDATE user: Artist Verification
-router.patch("/:_id/verify-artist", isAuthenticated, (req, res) => {
-  const bodyData = req.body;
-  const address = req.body.contact.address;
-  const artwork = req.body.artworks[0];
-  if (
-    bodyData.real_name &&
-    bodyData.artist_statement &&
-    address.street &&
-    address.city &&
-    address.country &&
-    address.postal_code &&
-    artwork.title &&
-    artwork.year &&
-    artwork.city &&
-    artwork.dimensions &&
-    artwork.genre &&
-    artwork.medium &&
-    artwork.images_url
-  ) {
-    User.findByIdAndUpdate(req.params._id, {real_name:bodyData.real_name,
-      artist_statement:bodyData.artist_statement,
-      contact: {address: { street: address.street,
-      city:address.city,
-      country:address.country,
-      postal_code:address.postal_code}},
-    isArtist:true}, {new:true})
-    .select("-password")
-    .populate("artworks favorites")
-    .then((verifiedArtist)=>{
-      let artist = verifiedArtist
-      return Artwork.create({artist:artist._id,title:artwork.title, year:artwork.year, city:artwork.city, dimensions:artwork.dimensions, medium:artwork.medium, genre:artwork.genre, images_url:artwork.images_url})
-    })
-    .populate("artist")
-    .then((newArtwork)=>{
-      console.log(newArtwork)
-      res.json(newArtwork.artist, newArtwork)
-    })
-    .catch((err)=>{
-      console.log(err)
-      res.json(err)
-    })
-  }
-  else{
-    console.log("Missing data in request")
-    res.json({err: "Missing data in request: in order to verify as an artist, all required fields must be filled out."})
+router.patch("/:_id/verify-artist", isAuthenticated, async (req, res) => {
+  try {
+    const bodyData = req.body;
+    console.log("what is in the request body of verification",req.body)
+    const address = bodyData.contact.address;
+    const artwork = bodyData.artwork;
+    if (
+      bodyData.real_name &&
+      bodyData.artist_statement &&
+      address.street &&
+      address.city &&
+      address.country &&
+      address.postal_code &&
+      artwork.title &&
+      artwork.year &&
+      artwork.city &&
+      artwork.dimensions &&
+      artwork.genre &&
+      artwork.medium &&
+      artwork.images_url
+    ) {
+      console.log("in the if block")
+      const firstArtwork = await Artwork.create({
+        artist: artwork.artist,
+        title: artwork.title,
+        year: artwork.year,
+        city: artwork.city,
+        dimensions: artwork.dimensions,
+        medium: artwork.medium,
+        genre: artwork.genre,
+        images_url: artwork.images_url,
+      });
+
+      console.log("First Artwork", firstArtwork);
+      // res.status(201).json(firstArtwork);
+
+      const verifiedArtist = await User.findByIdAndUpdate(
+        req.params._id,
+        {
+          real_name: bodyData.real_name,
+          artist_statement: bodyData.artist_statement,
+          contact: {
+            address: {
+              street: address.street,
+              city: address.city,
+              country: address.country,
+              postal_code: address.postal_code,
+            },
+          },
+          isArtist: true,
+        },
+        { new: true }
+      )
+        .select("-password")
+        .populate("artworks favorites");
+        console.log("Verified Artist: ",verifiedArtist)
+        res.status(200).json(verifiedArtist)
+    }
+    else{
+      console.log("Missing Data in Request")
+      res.status(400).json({
+        err: "Missing data in request: in order to verify as an artist, all required fields must be filled out.",
+      });
+    }
+  } catch(err) {
+    console.log("Verification failed", err);
+    res.status(400).json(err)
   }
 });
 
