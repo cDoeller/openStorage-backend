@@ -124,9 +124,8 @@ router.patch("/:_id/update", isAuthenticated, (req, res) => {
 router.patch("/:_id/verify-artist", isAuthenticated, async (req, res) => {
   try {
     const bodyData = req.body;
-    console.log("what is in the request body of verification",req.body)
+    console.log("what is in the request body of verification", bodyData)
     const address = bodyData.contact.address;
-    const artwork = bodyData.artwork;
     if (
       bodyData.real_name &&
       bodyData.artist_statement &&
@@ -134,29 +133,10 @@ router.patch("/:_id/verify-artist", isAuthenticated, async (req, res) => {
       address.city &&
       address.country &&
       address.postal_code &&
-      artwork.title &&
-      artwork.year &&
-      artwork.city &&
-      artwork.dimensions &&
-      artwork.genre &&
-      artwork.medium &&
-      artwork.images_url
+      bodyData.artwork
     ) {
       console.log("in the if block")
-      const firstArtwork = await Artwork.create({
-        artist: artwork.artist,
-        title: artwork.title,
-        year: artwork.year,
-        city: artwork.city,
-        dimensions: artwork.dimensions,
-        medium: artwork.medium,
-        genre: artwork.genre,
-        images_url: artwork.images_url,
-      });
-
-      console.log("First Artwork", firstArtwork);
-      // res.status(201).json(firstArtwork);
-
+      
       const verifiedArtist = await User.findByIdAndUpdate(
         req.params._id,
         {
