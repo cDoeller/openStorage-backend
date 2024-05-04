@@ -73,7 +73,7 @@ const userSchema = new mongoose.Schema(
           type: String,
         },
         postal_code: {
-          type: Number,
+          type: String,
         },
         phone_number: {
           type: Number,
