@@ -4,26 +4,13 @@ const User = require("../models/User.model");
 
 const router = require("express").Router();
 
-const fileUploader = require("../config/cloudinary.config");
-
-// UPLOAD IMAGE ----- TO DO
-router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
-  // console.log("file is: ", req.file)
-  if (!req.file) {
-    next(new Error("No file uploaded!"));
-    return;
-  }
-  // Get the URL of the uploaded file and send it as a response.
-  // 'fileUrl' can be any name, just make sure you remember to use the same when accessing it on the frontend
-  res.status(200).json({ fileUrl: req.file.path });
-});
+const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 
 // GET all artworks
 router.get("/", (req, res) => {
   Artwork.find()
     .populate("artist")
     .then((Artworks) => {
-      console.log(Artworks);
       res.status(200).json(Artworks);
     })
     .catch((err) => {
@@ -40,7 +27,6 @@ router.get("/recent", (req, res) => {
     .limit(amount)
     .populate("artist")
     .then((Artworks) => {
-      // console.log(Artworks);
       res.status(200).json(Artworks);
     })
     .catch((err) => {
@@ -52,7 +38,6 @@ router.get("/recent", (req, res) => {
 // GET popular genres
 router.get("/popular-genres", (req, res) => {
   // count how often a genre is present in artworks {_id:genre, count{sum}}
-  // and sort the array in descending order
   Artwork.aggregate([
     {
       $group: {
@@ -65,7 +50,6 @@ router.get("/popular-genres", (req, res) => {
     },
   ])
     .then((popularGenres) => {
-      // console.log(Artworks);
       res.status(200).json(popularGenres);
     })
     .catch((err) => {
@@ -78,7 +62,6 @@ router.get("/popular-genres", (req, res) => {
 router.get("/cities", (req, res) => {
   Artwork.distinct("city")
     .then((Artworks) => {
-      // console.log(Artworks);
       res.status(200).json(Artworks);
     })
     .catch((err) => {
@@ -87,7 +70,7 @@ router.get("/cities", (req, res) => {
     });
 });
 
-// SEARCH artworks
+// GET / SEARCH artworks
 router.get("/search", (req, res) => {
   const {
     artist,
@@ -126,7 +109,6 @@ router.get("/:id", (req, res) => {
   Artwork.findById(req.params.id)
     .populate("artist")
     .then((oneArtwork) => {
-      console.log(oneArtwork);
       res.status(200).json(oneArtwork);
     })
     .catch((err) => {
@@ -135,8 +117,8 @@ router.get("/:id", (req, res) => {
     });
 });
 
-// POST a new artwork async
-router.post("/", async (req, res) => {
+// POST new artwork
+router.post("/", isAuthenticated, async (req, res) => {
   try {
     console.log(req.body);
     const newArtwork = await Artwork.create(req.body);
@@ -145,8 +127,6 @@ router.post("/", async (req, res) => {
       { $push: { artworks: newArtwork._id } },
       { new: true }
     );
-    console.log(newArtwork);
-    console.log(updatedArtist);
     res
       .status(200)
       .json({ newArtwork: newArtwork, updatedArtist: updatedArtist });
@@ -157,10 +137,9 @@ router.post("/", async (req, res) => {
 });
 
 // UPDATE one artwork
-router.patch("/:id", (req, res) => {
+router.patch("/:id", isAuthenticated, (req, res) => {
   Artwork.findByIdAndUpdate(req.params.id, req.body, { new: true })
     .then((updatedArtwork) => {
-      console.log(updatedArtwork);
       res.status(200).json(updatedArtwork);
     })
     .catch((err) => {
@@ -170,10 +149,9 @@ router.patch("/:id", (req, res) => {
 });
 
 // DELETE one artwork
-router.delete("/:id", (req, res) => {
+router.delete("/:id", isAuthenticated, (req, res) => {
   Artwork.findByIdAndDelete(req.params.id)
     .then((deletedArtwork) => {
-      console.log(deletedArtwork);
       res.status(200).json(deletedArtwork);
     })
     .catch((err) => {
@@ -183,20 +161,3 @@ router.delete("/:id", (req, res) => {
 });
 
 module.exports = router;
-
-// {
-//     "title": "Dreamscape",
-// "year": 2023,
-// "city": "New York",
-// "dimensions": {
-// "x": 120,
-// "y": 90,
-// "z": 0
-// },
-// "images_url": [
-// "https://example.com/dreamscape_image1.jpg",
-// "https://example.com/dreamscape_image2.jpg"
-// ],
-// "medium": "Painting",
-// "genre": "Surrealism"
-// }
