@@ -6,8 +6,7 @@ const router = require("express").Router();
 
 const fileUploader = require("../config/cloudinary.config");
 
-
-// UPLOAD IMAGE ----- TO DO 
+// UPLOAD IMAGE ----- TO DO
 router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
   // console.log("file is: ", req.file)
   if (!req.file) {
@@ -18,7 +17,6 @@ router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
   // 'fileUrl' can be any name, just make sure you remember to use the same when accessing it on the frontend
   res.status(200).json({ fileUrl: req.file.path });
 });
-
 
 // GET all artworks
 router.get("/", (req, res) => {
@@ -37,11 +35,38 @@ router.get("/", (req, res) => {
 // GET recently added
 router.get("/recent", (req, res) => {
   const amount = req.query.amount;
-  Artwork.find().sort({ createdAt: -1 }).limit(amount)
+  Artwork.find()
+    .sort({ createdAt: -1 })
+    .limit(amount)
     .populate("artist")
     .then((Artworks) => {
       // console.log(Artworks);
       res.status(200).json(Artworks);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+});
+
+// GET popular genres
+router.get("/popular-genres", (req, res) => {
+  // count how often a genre is present in artworks {_id:genre, count{sum}}
+  // and sort the array in descending order
+  Artwork.aggregate([
+    {
+      $group: {
+        _id: "$genre",
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $sort: { count: -1 },
+    },
+  ])
+    .then((popularGenres) => {
+      // console.log(Artworks);
+      res.status(200).json(popularGenres);
     })
     .catch((err) => {
       console.log(err);
@@ -113,7 +138,7 @@ router.get("/:id", (req, res) => {
 // POST a new artwork async
 router.post("/", async (req, res) => {
   try {
-    console.log(req.body)
+    console.log(req.body);
     const newArtwork = await Artwork.create(req.body);
     const updatedArtist = await User.findByIdAndUpdate(
       req.body.artist,
@@ -122,7 +147,9 @@ router.post("/", async (req, res) => {
     );
     console.log(newArtwork);
     console.log(updatedArtist);
-    res.status(200).json({ newArtwork: newArtwork, updatedArtist: updatedArtist });
+    res
+      .status(200)
+      .json({ newArtwork: newArtwork, updatedArtist: updatedArtist });
   } catch (err) {
     console.log(err);
     res.status(400).json(err);
