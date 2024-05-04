@@ -23,7 +23,7 @@ router.get("/artists", (req, res) => {
 // GET all artists with artworks
 router.get("/artists/works", (req, res) => {
   User.find({ $and: [{ isArtist: true }, { artworks: { $ne: [] } }] })
-    .select("user_name _id artworks")
+    .select("real_name _id artworks")
     .populate("artworks favorites")
     .then((allArtists) => {
       res.status(200).json(allArtists);
