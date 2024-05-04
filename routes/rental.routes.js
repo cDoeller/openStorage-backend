@@ -4,8 +4,10 @@ const User = require("../models/User.model");
 
 const router = require("express").Router();
 
+const { isAuthenticated } = require("../middleware/jwt.middleware.js");
+
 // CREATE a new rental
-router.post("/", async (req, res) => {
+router.post("/", isAuthenticated, async (req, res) => {
   try {
     const newRental = await Rental.create(req.body);
     const updatedArtist = await User.findByIdAndUpdate(
@@ -26,7 +28,7 @@ router.post("/", async (req, res) => {
 });
 
 // UPDATE a rental, updates the artwork
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", isAuthenticated, async (req, res) => {
   try {
     const updatedRental = await Rental.findByIdAndUpdate(
       req.params.id,
@@ -42,7 +44,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // GET one rental
-router.get("/:id", (req, res) => {
+router.get("/:id", isAuthenticated, (req, res) => {
   Rental.findById(req.params.id)
     .populate("artist artwork user_borrowing")
     .then((oneRental) => {
@@ -56,7 +58,7 @@ router.get("/:id", (req, res) => {
 });
 
 // GET all pending rentals (requests) by one user
-router.get("/:user_id/pending", (req, res) => {
+router.get("/:user_id/pending", isAuthenticated, (req, res) => {
   Rental.find({
     $and: [{ user_borrowing: req.params.user_id }, { is_approved: false }],
   })
@@ -72,7 +74,7 @@ router.get("/:user_id/pending", (req, res) => {
 });
 
 // GET all approved rentals for one user
-router.get("/:user_id/approved", (req, res) => {
+router.get("/:user_id/approved", isAuthenticated, (req, res) => {
   Rental.find({
     $and: [{ user_borrowing: req.params.user_id }, { is_approved: true }],
   })
@@ -87,7 +89,7 @@ router.get("/:user_id/approved", (req, res) => {
     });
 });
 
-router.delete("/:id", (req,res)=>{
+router.delete("/:id", isAuthenticated, (req,res)=>{
   Rental.findByIdAndDelete(req.params.id)
   .then((deletedRental) => {
     console.log(deletedRental);

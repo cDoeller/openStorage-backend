@@ -124,7 +124,6 @@ router.patch("/:_id/update", isAuthenticated, (req, res) => {
 router.patch("/:_id/verify-artist", isAuthenticated, async (req, res) => {
   try {
     const bodyData = req.body;
-    console.log("what is in the request body of verification", bodyData)
     const address = bodyData.contact.address;
     if (
       bodyData.real_name &&
@@ -135,7 +134,6 @@ router.patch("/:_id/verify-artist", isAuthenticated, async (req, res) => {
       address.postal_code &&
       bodyData.artwork
     ) {
-      console.log("in the if block")
       
       const verifiedArtist = await User.findByIdAndUpdate(
         req.params._id,
@@ -156,17 +154,14 @@ router.patch("/:_id/verify-artist", isAuthenticated, async (req, res) => {
       )
         .select("-password")
         .populate("artworks favorites");
-        console.log("Verified Artist: ",verifiedArtist)
         res.status(200).json(verifiedArtist)
     }
     else{
-      console.log("Missing Data in Request")
       res.status(400).json({
         err: "Missing data in request: in order to verify as an artist, all required fields must be filled out.",
       });
     }
   } catch(err) {
-    console.log("Verification failed", err);
     res.status(400).json(err)
   }
 });
@@ -184,10 +179,8 @@ router.delete("/:_id/delete", isAuthenticated, (req, res) => {
 });
 
 // NOTIFICATIONS
-// -----> add is authenticated
-
 // POST one notification in sub-schema
-router.post("/:_id/notifications", (req, res) => {
+router.post("/:_id/notifications", isAuthenticated, (req, res) => {
   const _id = req.params._id;
   const newNotification = req.body;
   User.findByIdAndUpdate(
@@ -290,7 +283,7 @@ router.get("/:_id/notifications/:_requestId", isAuthenticated, (req, res) => {
 });
 
 // UPDATE one notification, "new" field only
-router.patch("/:_id/notifications/:notification_id/new", (req, res) => {
+router.patch("/:_id/notifications/:notification_id/new", isAuthenticated, (req, res) => {
   const _id = req.params._id;
   const notification_id = req.params.notification_id;
   const data = req.body;
@@ -309,7 +302,7 @@ router.patch("/:_id/notifications/:notification_id/new", (req, res) => {
 });
 
 // UPDATE one notification of one user of sub-schema
-router.patch("/:_id/notifications/:notification_id", (req, res) => {
+router.patch("/:_id/notifications/:notification_id", isAuthenticated, (req, res) => {
   const _id = req.params._id;
   const notification_id = req.params.notification_id;
   const data = req.body;
@@ -346,7 +339,7 @@ router.patch("/:_id/notifications/:notification_id", (req, res) => {
 });
 
 // DELETE one notification of one user of sub-schema
-router.delete("/:_id/notifications/:notification_id", (req, res) => {
+router.delete("/:_id/notifications/:notification_id", isAuthenticated, (req, res) => {
   const _id = req.params._id;
   const notification_id = req.params.notification_id;
   // remove only one object from array of objects with $pull
