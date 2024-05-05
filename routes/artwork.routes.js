@@ -148,16 +148,47 @@ router.patch("/:id", isAuthenticated, (req, res) => {
     });
 });
 
-// DELETE one artwork
-router.delete("/:id", isAuthenticated, (req, res) => {
-  Artwork.findByIdAndDelete(req.params.id)
-    .then((deletedArtwork) => {
-      res.status(200).json(deletedArtwork);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(400).json(err);
-    });
+router.delete("/:id", isAuthenticated, async (req, res) => {
+  const artworkId = req.params.id;
+
+  try {
+    // Find the artwork by ID and delete it
+    const deletedArtwork = await Artwork.findByIdAndDelete(artworkId);
+
+    if (!deletedArtwork) {
+      return res.status(404).json({ error: 'Artwork not found' });
+    }
+
+    // Find the corresponding user and remove the deleted artwork ID from the artworks array
+    const user = await User.findOneAndUpdate(
+      { _id: deletedArtwork.artist },
+      { $pull: { artworks: artworkId } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Return success response
+    return res.status(200).json({ message: 'Artwork deleted successfully', deletedArtwork });
+  } catch (error) {
+    console.error('Error deleting artwork:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 });
+
+// DELETE one artwork
+// router.delete("/:id", isAuthenticated, (req, res) => {
+//   Artwork.findByIdAndDelete(req.params.id)
+//     .then((deletedArtwork) => {
+//       res.status(200).json(deletedArtwork);
+//       return User.findByIdAndUpdate(req.body.artist, {})
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       res.status(400).json(err);
+//     });
+// });
 
 module.exports = router;
