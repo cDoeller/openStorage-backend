@@ -3,7 +3,7 @@ const router = require("express").Router()
 
 const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 
-router.post("/", fileUploader.array("images", 10), isAuthenticated, (req, res, next) => {
+router.post("/", fileUploader.array("images", 5), isAuthenticated, (req, res, next) => {
     if (!req.files || req.files.length === 0) {
       next(new Error("No files uploaded!"));
       return;
