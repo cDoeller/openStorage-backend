@@ -31,11 +31,20 @@ const rentalSchema = new mongoose.Schema({
   message: {
     type: String,
   },
+  change_request: {
+    change_requested: {
+      type: Boolean,
+      default: false,
+    },
+    new_end_date: {
+      type: Date,
+    },
+  },
   state: {
     type: String,
     default: "pending",
     enum: {
-      values: ["accepted", "rejected", "pending"],
+      values: ["accepted", "rejected", "pending", "cancelled"],
       message: "{VALUE} is not supported",
     },
   },
