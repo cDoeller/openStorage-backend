@@ -76,7 +76,7 @@ const userSchema = new mongoose.Schema(
           type: String,
         },
         phone_number: {
-          type: Number,
+          type: String,
         },
       },
     },
@@ -88,7 +88,7 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
     artist_statement: {
-      type: String,
+      type: String
     },
     artworks: [
       {
