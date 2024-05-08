@@ -58,9 +58,9 @@ router.get("/popular-genres", (req, res) => {
     });
 });
 
-// GET all cities (unique)
-router.get("/cities", (req, res) => {
-  Artwork.distinct("city")
+// GET for one feature (unique)
+router.get("/distinct/:feature", (req, res) => {
+  Artwork.distinct(req.params.feature)
     .then((Artworks) => {
       res.status(200).json(Artworks);
     })
@@ -92,7 +92,6 @@ router.get("/search", (req, res) => {
   if (dimensions_y) searchQuery["dimensions.y"] = { $lte: `${dimensions_y}` };
   if (dimensions_z) searchQuery["dimensions.z"] = { $lte: `${dimensions_z}` };
 
-  console.log(searchQuery);
   Artwork.find(searchQuery)
     .populate("artist")
     .then((foundArtworks) => {
