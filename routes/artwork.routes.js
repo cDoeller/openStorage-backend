@@ -11,7 +11,29 @@ router.get("/", (req, res) => {
   Artwork.find()
     .populate("artist")
     .then((Artworks) => {
-      res.status(200).json(Artworks);
+      const uniqueCities = Artworks.map((artwork) => artwork.city).filter(
+        (city, index, self) => self.indexOf(city) === index
+      );
+
+      const uniqueGenres = Artworks.flatMap((artwork) => artwork.genre).filter(
+        (genre, index, self) => self.indexOf(genre) === index
+      );
+
+      const uniqueMedia = Artworks.flatMap((artwork) => artwork.medium).filter(
+        (medium, index, self) => self.indexOf(medium) === index
+      );
+
+      const uniqueArtists = Artworks.flatMap(
+        (artwork) => artwork.artist
+      ).filter((artist, index, self) => self.indexOf(artist) === index);
+
+      res.status(200).json({
+        artworks: Artworks,
+        uniqueCities,
+        uniqueGenres,
+        uniqueMedia,
+        uniqueArtists,
+      });
     })
     .catch((err) => {
       console.log(err);
@@ -58,18 +80,6 @@ router.get("/popular-genres", (req, res) => {
     });
 });
 
-// GET for one feature (unique)
-router.get("/distinct/:feature", (req, res) => {
-  Artwork.distinct(req.params.feature)
-    .then((Artworks) => {
-      res.status(200).json(Artworks);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(400).json(err);
-    });
-});
-
 // GET / SEARCH artworks
 router.get("/search", (req, res) => {
   const {
@@ -94,8 +104,30 @@ router.get("/search", (req, res) => {
 
   Artwork.find(searchQuery)
     .populate("artist")
-    .then((foundArtworks) => {
-      res.status(200).json(foundArtworks);
+    .then((Artworks) => {
+      const uniqueCities = Artworks.map((artwork) => artwork.city).filter(
+        (city, index, self) => self.indexOf(city) === index
+      );
+
+      const uniqueGenres = Artworks.flatMap((artwork) => artwork.genre).filter(
+        (genre, index, self) => self.indexOf(genre) === index
+      );
+
+      const uniqueMedia = Artworks.flatMap((artwork) => artwork.medium).filter(
+        (medium, index, self) => self.indexOf(medium) === index
+      );
+
+      const uniqueArtists = Artworks.flatMap(
+        (artwork) => artwork.artist
+      ).filter((artist, index, self) => self.indexOf(artist) === index);
+
+      res.status(200).json({
+        artworks: Artworks,
+        uniqueCities,
+        uniqueGenres,
+        uniqueMedia,
+        uniqueArtists,
+      });
     })
     .catch((err) => {
       console.log(err);
@@ -155,7 +187,7 @@ router.delete("/:id", isAuthenticated, async (req, res) => {
     const deletedArtwork = await Artwork.findByIdAndDelete(artworkId);
 
     if (!deletedArtwork) {
-      return res.status(404).json({ error: 'Artwork not found' });
+      return res.status(404).json({ error: "Artwork not found" });
     }
 
     // Find the corresponding user and remove the deleted artwork ID from the artworks array
@@ -166,14 +198,16 @@ router.delete("/:id", isAuthenticated, async (req, res) => {
     );
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     // Return success response
-    return res.status(200).json({ message: 'Artwork deleted successfully', deletedArtwork });
+    return res
+      .status(200)
+      .json({ message: "Artwork deleted successfully", deletedArtwork });
   } catch (error) {
-    console.error('Error deleting artwork:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error("Error deleting artwork:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
